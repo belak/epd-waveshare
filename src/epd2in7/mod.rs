@@ -210,7 +210,21 @@ where
     }
 
     fn clear_frame(&mut self, spi: &mut SPI, _delay: &mut DELAY) -> Result<(), SPI::Error> {
-        todo!();
+        let color_value = self.color.get_byte_value();
+
+        self.interface.cmd(spi, Command::DataStartTransmission1)?;
+        self.interface
+            .data_x_times(spi, color_value, WIDTH * HEIGHT / 8)?;
+
+        self.interface.cmd(spi, Command::DataStartTransmission2)?;
+        self.interface
+            .data_x_times(spi, color_value, WIDTH * HEIGHT / 8)?;
+
+        self.interface.cmd(spi, Command::DataStop)?;
+
+        self.wait_until_idle();
+
+        Ok(())
     }
 
     fn set_background_color(&mut self, color: Color) {
