@@ -12,13 +12,17 @@ use embedded_hal::{
     digital::v2::{InputPin, OutputPin},
 };
 
-use crate::buffer_len;
 use crate::color::Color;
 use crate::interface::DisplayInterface;
 use crate::traits::{InternalWiAdditions, RefreshLut, WaveshareDisplay};
 
 pub(crate) mod command;
 use self::command::Command;
+
+#[cfg(feature = "graphics")]
+mod graphics;
+#[cfg(feature = "graphics")]
+pub use self::graphics::Display2in7;
 
 pub(crate) mod constants;
 use self::constants::*;
