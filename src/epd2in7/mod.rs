@@ -151,14 +151,17 @@ where
         buffer: &[u8],
         _delay: &mut DELAY,
     ) -> Result<(), SPI::Error> {
+        /*
         self.cmd(spi, Command::DataStartTransmission1)?;
         self.interface
             .data_x_times(spi, !self.color.get_byte_value(), WIDTH * HEIGHT / 8)?;
+        */
 
-        self.cmd(spi, Command::DataStartTransmission2)?;
-        self.send_buffer_helper(spi, buffer)?;
+        self.cmd_with_data(spi, Command::DataStartTransmission2, buffer)?;
+        //self.cmd(spi, Command::DataStartTransmission2)?;
+        //self.send_buffer_helper(spi, buffer)?;
 
-        self.cmd(spi, Command::DataStop)?;
+        self.interface.cmd(spi, Command::DisplayRefresh)?;
 
         self.wait_until_idle();
 
@@ -221,7 +224,7 @@ where
         self.interface
             .data_x_times(spi, color_value, WIDTH * HEIGHT / 8)?;
 
-        self.interface.cmd(spi, Command::DataStop)?;
+        self.interface.cmd(spi, Command::DisplayRefresh)?;
 
         self.wait_until_idle();
 
