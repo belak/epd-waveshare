@@ -151,16 +151,17 @@ where
         buffer: &[u8],
         _delay: &mut DELAY,
     ) -> Result<(), SPI::Error> {
-        /*
-        self.interface.cmd(spi, Command::DataStartTransmission1)?;
-        self.send_buffer_helper(spi, buffer)?;
-        */
+        self.cmd(spi, Command::DataStartTransmission1)?;
+        self.interface
+            .data_x_times(spi, !self.color.get_byte_value(), WIDTH * HEIGHT / 8)?;
 
-        // Clear chromatic layer since we won't be using it here
-        self.interface.cmd(spi, Command::DataStartTransmission2)?;
+        self.cmd(spi, Command::DataStartTransmission2)?;
         self.send_buffer_helper(spi, buffer)?;
 
-        self.interface.cmd(spi, Command::DataStop)?;
+        self.cmd(spi, Command::DataStop)?;
+
+        self.wait_until_idle();
+
         Ok(())
     }
 
@@ -252,13 +253,8 @@ where
         self.cmd_with_data(spi, Command::LutForVcom, &LUT_VCOM_DC)?;
         self.cmd_with_data(spi, Command::LutWhiteToWhite, &LUT_WW)?;
         self.cmd_with_data(spi, Command::LutBlackToWhite, &LUT_BW)?;
-
-        // NOTE: if these seem reversed, you're absolutely right. For some
-        // reason the C driver seems a bit mixed up. The only reason it's in
-        // here reversed is because that's how both the C and Python reference
-        // code do it.
-        self.cmd_with_data(spi, Command::LutWhiteToBlack, &LUT_BB)?;
-        self.cmd_with_data(spi, Command::LutBlackToBlack, &LUT_WB)?;
+        self.cmd_with_data(spi, Command::LutWhiteToBlack, &LUT_WB)?;
+        self.cmd_with_data(spi, Command::LutBlackToBlack, &LUT_BB)?;
         Ok(())
     }
 
