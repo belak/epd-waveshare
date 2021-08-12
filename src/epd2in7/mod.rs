@@ -252,8 +252,13 @@ where
         self.cmd_with_data(spi, Command::LutForVcom, &LUT_VCOM_DC)?;
         self.cmd_with_data(spi, Command::LutWhiteToWhite, &LUT_WW)?;
         self.cmd_with_data(spi, Command::LutBlackToWhite, &LUT_BW)?;
-        self.cmd_with_data(spi, Command::LutWhiteToBlack, &LUT_WB)?;
-        self.cmd_with_data(spi, Command::LutBlackToBlack, &LUT_BB)?;
+
+        // NOTE: if these seem reversed, you're absolutely right. For some
+        // reason the C driver seems a bit mixed up. The only reason it's in
+        // here reversed is because that's how both the C and Python reference
+        // code do it.
+        self.cmd_with_data(spi, Command::LutWhiteToBlack, &LUT_BB)?;
+        self.cmd_with_data(spi, Command::LutBlackToBlack, &LUT_WB)?;
         Ok(())
     }
 
